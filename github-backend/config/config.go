@@ -1,43 +1,37 @@
 package config
 
 import (
-	"log"
+	"errors"
 	"os"
 
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	GitHubClientID     string
-	GitHubClientSecret string
-	AppPrivateKey      string
-	AppID              string
-	OrgName            string
-	Port               string
+	Port        string
+	GitHubToken string
 }
 
-func LoadConfig() *Config {
+func LoadConfig() (*Config, error) {
 	// Load .env file (optional, depending on deployment strategy)
 	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found, using system environment variables")
+		return nil, errors.New("no .env file found")
 	}
 
 	// Get environment variables
 	config := &Config{
-		GitHubClientID:     getEnv("GITHUB_CLIENT_ID", ""),
-		GitHubClientSecret: getEnv("GITHUB_CLIENT_SECRET", ""),
-		AppPrivateKey:      getEnv("APP_PRIVATE_KEY", ""),
-		AppID:              getEnv("APP_ID", ""),
-		OrgName:            getEnv("GITHUB_ORG_NAME", ""),
-		Port:               getEnv("PORT", "8080"),
+
+		Port:        getEnv("PORT", "5000"),
+		GitHubToken: getEnv("GITHUB_TOKEN", ""),
 	}
 
 	// Validate required variables
-	if config.GitHubClientID == "" || config.GitHubClientSecret == "" || config.AppPrivateKey == "" || config.AppID == "" {
-		log.Fatal("Missing required environment variables")
+	if config.GitHubToken == "" {
+		return nil, errors.New("missing required environment variables")
+
 	}
 
-	return config
+	return config, nil
 }
 
 // Helper function to fetch environment variables with a fallback
