@@ -6,12 +6,12 @@ import (
 	"github.com/go-chi/render"
 )
 
-// GetPrivateRepos fetches and returns personal repositories
+// GetPrivateRepos fetches and returns private repositories
 func (h *RepoHandler) GetPrivateRepos(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
 	repos, err := h.GitHubService.FetchPrivateRepos()
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, map[string]string{"error": "Failed to fetch personal repositories: " + err.Error()})
+		render.JSON(w, r, map[string]string{"error": "Failed to fetch private repositories: " + err.Error()})
 		return nil, http.StatusInternalServerError, err
 	}
 

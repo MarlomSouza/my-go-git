@@ -18,5 +18,6 @@ func NewRepoHandler(service services.GitHubService) *RepoHandler {
 // RegisterRoutes registers routes for the RepoHandler
 func (h *RepoHandler) RegisterRoutes(r chi.Router) {
 	r.Get("/repos/private", HandlerError(h.GetPrivateRepos))
-	r.Get("/repos/public", h.GetPublicRepos)
+	r.Get("/repos/public", HandlerError(h.GetPublicRepos))
+	// r.Get("/repos/org/{orgName}", h.GetOrgRepos)
 }
