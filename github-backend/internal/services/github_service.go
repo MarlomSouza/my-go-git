@@ -1,11 +1,9 @@
 package services
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"time"
+
+	"github.com/go-resty/resty/v2"
 
 	"github.com/MarlomSouza/go-git/internal/models"
 )
@@ -17,7 +15,7 @@ type GitHubService interface {
 
 // GitHubService provides methods for interacting with the GitHub API
 type GitHubServiceImp struct {
-	HTTPClient *http.Client
+	HTTPClient *resty.Client
 	BaseURL    string
 	Token      string
 }
@@ -25,7 +23,7 @@ type GitHubServiceImp struct {
 // NewGitHubService initializes a new GitHubService
 func NewGitHubService(token string) *GitHubServiceImp {
 	return &GitHubServiceImp{
-		HTTPClient: &http.Client{Timeout: 10 * time.Second},
+		HTTPClient: resty.New(),
 		BaseURL:    "https://api.github.com",
 		Token:      token,
 	}
@@ -45,29 +43,24 @@ func (s *GitHubServiceImp) FetchPrivateRepos() ([]models.Repository, error) {
 
 // fetchRepos handles the core logic for fetching repositories from the GitHub API
 func (s *GitHubServiceImp) fetchRepos(url string) ([]models.Repository, error) {
+	// Use the injected HTTP client (resty.Client)
 	client := s.HTTPClient
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
 
-	req.Header.Set("Authorization", "Bearer "+s.Token)
-	req.Header.Set("Accept", "application/vnd.github.v3+json")
+	// Store the response in a slice of repositories
+	var repos []models.Repository
+	resp, err := client.R().
+		SetHeader("Authorization", "Bearer "+s.Token).
+		SetHeader("Accept", "application/vnd.github.v3+json").
+		SetResult(&repos). // Automatically decode JSON into the repos variable
+		Get(url)
 
-	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("GitHub API error: %s", string(body))
+	if resp.IsError() {
+		return nil, fmt.Errorf("GitHub API error: %s", resp.String())
 	}
 
-	var repos []models.Repository
-	if err := json.NewDecoder(resp.Body).Decode(&repos); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
-	}
 	return repos, nil
 }

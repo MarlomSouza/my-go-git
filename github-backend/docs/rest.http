@@ -1,5 +1,5 @@
 ###
-GET http://localhost:5000/repos/private
+GET http://localhost:5000/repos/public
 
 
 ###
