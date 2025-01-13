@@ -23,15 +23,17 @@ func NewRepoHandler(service services.GitHubService) *RepoHandler {
 // RegisterRoutes registers routes for the RepoHandler
 func (h *RepoHandler) RegisterRoutes(r chi.Router) {
 	r.Route("/repos", func(r chi.Router) {
-		r.Use(TokenFromHeaderMiddleware)
+		r.Use(TokenFromCookieMiddleware)
 		r.Get("/", HandlerError(h.GetRepos))
 		r.Get("/private", HandlerError(h.GetPrivateRepos))
 		r.Get("/organization", HandlerError(h.GetOrganization))
+		r.Get("/user", HandlerError(h.GetUser))
 	})
 }
 
 func (h *RepoHandler) GetOrganization(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
 	token, ok := r.Context().Value("accessToken").(string)
+
 	if !ok || token == "" {
 		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
 	}
@@ -58,6 +60,7 @@ func (h *RepoHandler) GetPrivateRepos(w http.ResponseWriter, r *http.Request) (i
 
 func (h *RepoHandler) getAllRepos(w http.ResponseWriter, r *http.Request, private bool) (interface{}, int, error) {
 	token, ok := r.Context().Value("accessToken").(string)
+
 	if !ok || token == "" {
 		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
 	}
@@ -78,4 +81,21 @@ func (h *RepoHandler) getAllRepos(w http.ResponseWriter, r *http.Request, privat
 	}
 
 	return repos, http.StatusOK, nil
+}
+
+// GetUser fetches and returns user information
+func (h *RepoHandler) GetUser(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
+	token, ok := r.Context().Value("accessToken").(string)
+	if !ok || token == "" {
+		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
+	}
+
+	user, err := h.GitHubService.FetchUser(token)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, map[string]string{"error": "Failed to fetch user info: " + err.Error()})
+		return nil, http.StatusInternalServerError, err
+	}
+
+	return user, http.StatusOK, nil
 }

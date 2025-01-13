@@ -12,6 +12,7 @@ type GitHubService interface {
 	FetchRepos(token string) ([]models.Repository, error)
 	FetchPrivateRepos(token string) ([]models.Repository, error)
 	FetchOrganization(token string) ([]string, error)
+	FetchUser(token string) (models.User, error)
 }
 
 // GitHubService provides methods for interacting with the GitHub API
@@ -91,4 +92,26 @@ func (s *GitHubServiceImp) FetchOrganization(token string) ([]string, error) {
 	}
 
 	return orgNames, nil
+}
+
+// FetchUser retrieves the authenticated user's profile information
+func (s *GitHubServiceImp) FetchUser(token string) (models.User, error) {
+	client := s.HTTPClient
+
+	var user models.User
+	resp, err := client.R().
+		SetHeader("Authorization", "Bearer "+token).
+		SetHeader("Accept", "application/vnd.github.v3+json").
+		SetResult(&user).
+		Get(fmt.Sprintf("%s/user", s.BaseURL))
+
+	if err != nil {
+		return models.User{}, fmt.Errorf("request failed: %w", err)
+	}
+
+	if resp.IsError() {
+		return models.User{}, fmt.Errorf("GitHub API error: %s", resp.String())
+	}
+
+	return user, nil
 }

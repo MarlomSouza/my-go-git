@@ -32,3 +32,11 @@ func (m *GithubServiceMock) FetchOrganization(token string) ([]string, error) {
 	}
 	return args.Get(0).([]string), args.Error(1)
 }
+
+func (m *GithubServiceMock) FetchUser(token string) (models.User, error) {
+	args := m.Called(token)
+	if args.Error(1) != nil {
+		return models.User{}, args.Error(1)
+	}
+	return args.Get(0).(models.User), args.Error(1)
+}

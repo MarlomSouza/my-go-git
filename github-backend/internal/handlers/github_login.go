@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	internalerrors "github.com/MarlomSouza/go-git/internal-errors"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
 	"golang.org/x/oauth2"
 )
 
@@ -16,7 +18,8 @@ type OAuthHandler struct {
 func (h *OAuthHandler) RegisterRoutes(r chi.Router) {
 
 	r.Get("/login/github", h.GitHubLogin)
-	r.Get("/login/github/callback", HandlerError(h.GitHubCallback))
+	r.Get("/login/github/callback", h.GitHubCallback)
+	r.Post("/logout", h.Logout)
 }
 
 // NewOAuthHandler creates a new instance of OAuthHandler
@@ -31,18 +34,44 @@ func (h *OAuthHandler) GitHubLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 // GitHub Callback Handler
-func (h *OAuthHandler) GitHubCallback(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
+func (h *OAuthHandler) GitHubCallback(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
 	if code == "" {
-		return nil, http.StatusBadRequest, internalerrors.ErrInternal
+		render.JSON(w, r, internalerrors.ErrInternal)
+		return
 	}
 
 	// Exchange the code for an access token
 	token, err := h.OAuthConfig.Exchange(r.Context(), code)
 	if err != nil {
-
-		return nil, http.StatusInternalServerError, err
+		render.JSON(w, r, internalerrors.ErrInternal)
+		return
 	}
 
-	return token, http.StatusOK, nil
+	// Store the token in a secure HTTP-only cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "access_token",
+		Value:    token.AccessToken,
+		Path:     "/",
+		HttpOnly: false,
+		Secure:   true,
+	})
+
+	http.Redirect(w, r, "http://localhost:3000/", http.StatusFound)
+
+}
+
+// Handle logout by clearing the cookie
+func (h *OAuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "access_token",
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Unix(0, 0), // Expire immediately
+		HttpOnly: false,
+		Secure:   true,
+	})
+
+	render.JSON(w, r, "Logged out successfully")
+
 }
