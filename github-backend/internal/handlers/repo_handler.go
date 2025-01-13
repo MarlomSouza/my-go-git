@@ -26,7 +26,25 @@ func (h *RepoHandler) RegisterRoutes(r chi.Router) {
 		r.Use(TokenFromHeaderMiddleware)
 		r.Get("/", HandlerError(h.GetRepos))
 		r.Get("/private", HandlerError(h.GetPrivateRepos))
+		r.Get("/organization", HandlerError(h.GetOrganization))
 	})
+}
+
+func (h *RepoHandler) GetOrganization(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
+	token, ok := r.Context().Value("accessToken").(string)
+	if !ok || token == "" {
+		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
+	}
+
+	organizations, err := h.GitHubService.FetchOrganization(token)
+
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, map[string]string{"error": "Failed to fetch repositories: " + err.Error()})
+		return nil, http.StatusInternalServerError, err
+	}
+
+	return organizations, http.StatusOK, nil
 }
 
 func (h *RepoHandler) GetRepos(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {

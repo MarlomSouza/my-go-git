@@ -2,6 +2,9 @@
 GET http://localhost:5000/repos/public
 Authorization: Bearer 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
 
+###
+GET http://localhost:5000/repos/organization
+Authorization: Bearer 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
 
 ###
 GET http://localhost:5000/ping

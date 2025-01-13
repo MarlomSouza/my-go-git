@@ -14,6 +14,7 @@ type OAuthHandler struct {
 }
 
 func (h *OAuthHandler) RegisterRoutes(r chi.Router) {
+
 	r.Get("/login/github", h.GitHubLogin)
 	r.Get("/login/github/callback", HandlerError(h.GitHubCallback))
 }
@@ -45,7 +46,3 @@ func (h *OAuthHandler) GitHubCallback(w http.ResponseWriter, r *http.Request) (i
 
 	return token, http.StatusOK, nil
 }
-
-// marlom-spam
-
-// marlom.spam@gmail.com

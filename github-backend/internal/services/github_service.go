@@ -11,6 +11,7 @@ import (
 type GitHubService interface {
 	FetchRepos(token string) ([]models.Repository, error)
 	FetchPrivateRepos(token string) ([]models.Repository, error)
+	FetchOrganization(token string) ([]string, error)
 }
 
 // GitHubService provides methods for interacting with the GitHub API
@@ -63,33 +64,31 @@ func (s *GitHubServiceImp) fetchRepos(url string, token string) ([]models.Reposi
 	return repos, nil
 }
 
-// // fetchOrganizations fetches the list of organizations the authenticated user is a part of
-// func (s *GitHubServiceImp) fetchOrganizations() ([]string, error) {
-// 	client := s.HTTPClient
+// fetchOrganizations fetches the list of organizations the authenticated user is a part of
+func (s *GitHubServiceImp) FetchOrganization(token string) ([]string, error) {
+	client := s.HTTPClient
 
-// 	var orgs []struct {
-// 		Login string `json:"login"`
-// 	}
+	var orgs []models.Orgs
 
-// 	resp, err := client.R().
-// 		SetHeader("Authorization", "Bearer "+s.Token).
-// 		SetHeader("Accept", "application/vnd.github.v3+json").
-// 		SetResult(&orgs).
-// 		Get(fmt.Sprintf("%s/user/orgs", s.BaseURL))
+	resp, err := client.R().
+		SetHeader("Authorization", "Bearer "+token).
+		SetHeader("Accept", "application/vnd.github.v3+json").
+		SetResult(&orgs).
+		Get(fmt.Sprintf("%s/user/orgs", s.BaseURL))
 
-// 	if err != nil {
-// 		return nil, fmt.Errorf("request failed: %w", err)
-// 	}
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %w", err)
+	}
 
-// 	if resp.IsError() {
-// 		return nil, fmt.Errorf("GitHub API error: %s", resp.String())
-// 	}
+	if resp.IsError() {
+		return nil, fmt.Errorf("GitHub API error: %s", resp.String())
+	}
 
-// 	// Extract the organization logins from the response
-// 	var orgNames []string
-// 	for _, org := range orgs {
-// 		orgNames = append(orgNames, org.Login)
-// 	}
+	// Extract the organization logins from the response
+	var orgNames []string
+	for _, org := range orgs {
+		orgNames = append(orgNames, org.Login)
+	}
 
-// 	return orgNames, nil
-// }
+	return orgNames, nil
+}

@@ -10,3 +10,7 @@ type Repository struct {
 	Private      bool      `json:"private"`
 	Organization string    `json:"organization,omitempty"`
 }
+
+type Orgs struct {
+	Login string `json:"login"`
+}
