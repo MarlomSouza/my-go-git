@@ -24,6 +24,8 @@ func HandlerError(endpointFunc EndpointFunc) http.HandlerFunc {
 				render.Status(r, http.StatusInternalServerError)
 			} else if errors.Is(err, internalerrors.ErrNotFound) {
 				render.Status(r, http.StatusNotFound)
+			} else if errors.Is(err, internalerrors.ErrUnauthorized) {
+				render.Status(r, http.StatusUnauthorized)
 			} else {
 				render.Status(r, http.StatusBadRequest)
 			}

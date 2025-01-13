@@ -9,16 +9,16 @@ type GithubServiceMock struct {
 	mock.Mock
 }
 
-func (m *GithubServiceMock) FetchPrivateRepos() ([]models.Repository, error) {
-	args := m.Called()
+func (m *GithubServiceMock) FetchPrivateRepos(token string) ([]models.Repository, error) {
+	args := m.Called(token)
 	if args.Error(1) != nil {
 		return nil, args.Error(1)
 	}
 	return args.Get(0).([]models.Repository), args.Error(1)
 }
 
-func (m *GithubServiceMock) FetchPublicRepos() ([]models.Repository, error) {
-	args := m.Called()
+func (m *GithubServiceMock) FetchPublicRepos(token string) ([]models.Repository, error) {
+	args := m.Called(token)
 	if args.Error(1) != nil {
 		return nil, args.Error(1)
 	}

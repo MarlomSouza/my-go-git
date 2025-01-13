@@ -16,8 +16,10 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dgrijalva/jwt-go/v4 v4.0.0-preview1
 	github.com/go-chi/render v1.0.3
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
+	golang.org/x/oauth2 v0.25.0
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

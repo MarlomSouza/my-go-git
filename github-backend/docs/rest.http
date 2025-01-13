@@ -1,6 +1,16 @@
 ###
-GET http://localhost:5000/repos/public
+GET http://localhost:5000/repos/private
+Authorization: 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
 
 
 ###
 GET http://localhost:5000/ping
+
+
+### Get github login
+GET http://localhost:5000/login/github
+
+
+### Get github accesstoken
+
+GET http://localhost:5000/login/github/callback?code=7c133d9586b5eb9b090b

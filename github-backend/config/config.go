@@ -8,8 +8,10 @@ import (
 )
 
 type Config struct {
-	Port        string
-	GitHubToken string
+	GitHubClientID     string
+	GitHubClientSecret string
+	RedirectURL        string
+	Port               string
 }
 
 func LoadConfig() (*Config, error) {
@@ -20,13 +22,14 @@ func LoadConfig() (*Config, error) {
 
 	// Get environment variables
 	config := &Config{
-
-		Port:        getEnv("PORT", "5000"),
-		GitHubToken: getEnv("GITHUB_TOKEN", ""),
+		GitHubClientID:     getEnv("GITHUB_CLIENT_ID", ""),
+		GitHubClientSecret: getEnv("GITHUB_CLIENT_SECRET", ""),
+		RedirectURL:        getEnv("REDIRECT_URL", "http://localhost:5000/login/github/callback"),
+		Port:               getEnv("PORT", "5000"),
 	}
 
 	// Validate required variables
-	if config.GitHubToken == "" {
+	if config.GitHubClientID == "" || config.GitHubClientSecret == "" {
 		return nil, errors.New("missing required environment variables")
 
 	}
