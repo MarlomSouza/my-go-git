@@ -30,17 +30,16 @@ func (h *OAuthHandler) GitHubLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 // GitHub Callback Handler
-
 func (h *OAuthHandler) GitHubCallback(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
 	code := r.URL.Query().Get("code")
 	if code == "" {
 		return nil, http.StatusBadRequest, internalerrors.ErrInternal
 	}
-	println("Credentials", h.OAuthConfig.ClientID, h.OAuthConfig.ClientSecret)
+
 	// Exchange the code for an access token
 	token, err := h.OAuthConfig.Exchange(r.Context(), code)
 	if err != nil {
-		println("ERROR exchange", code, &err)
+
 		return nil, http.StatusInternalServerError, err
 	}
 

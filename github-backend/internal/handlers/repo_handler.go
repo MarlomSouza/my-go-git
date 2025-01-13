@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	internalerrors "github.com/MarlomSouza/go-git/internal-errors"
+	"github.com/MarlomSouza/go-git/internal/models"
 	"github.com/MarlomSouza/go-git/internal/services"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -23,38 +24,38 @@ func NewRepoHandler(service services.GitHubService) *RepoHandler {
 func (h *RepoHandler) RegisterRoutes(r chi.Router) {
 	r.Route("/repos", func(r chi.Router) {
 		r.Use(TokenFromHeaderMiddleware)
+		r.Get("/", HandlerError(h.GetRepos))
 		r.Get("/private", HandlerError(h.GetPrivateRepos))
-		r.Get("/public", HandlerError(h.GetPublicRepos))
 	})
 }
 
-func (h *RepoHandler) GetPublicRepos(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
-	token, ok := r.Context().Value("accessToken").(string)
-	if !ok || token == "" {
-		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
-	}
-
-	repos, err := h.GitHubService.FetchRepos(token)
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, map[string]string{"error": "Failed to fetch public repositories: " + err.Error()})
-		return nil, http.StatusInternalServerError, err
-	}
-
-	return repos, http.StatusOK, nil
+func (h *RepoHandler) GetRepos(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
+	return h.getAllRepos(w, r, false)
 }
 
 // GetPrivateRepos fetches and returns private repositories
 func (h *RepoHandler) GetPrivateRepos(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
+	return h.getAllRepos(w, r, true)
+}
 
+func (h *RepoHandler) getAllRepos(w http.ResponseWriter, r *http.Request, private bool) (interface{}, int, error) {
 	token, ok := r.Context().Value("accessToken").(string)
 	if !ok || token == "" {
 		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
 	}
-	repos, err := h.GitHubService.FetchPrivateRepos(token)
+
+	var repos []models.Repository
+	var err error
+
+	if private {
+		repos, err = h.GitHubService.FetchPrivateRepos(token)
+	} else {
+		repos, err = h.GitHubService.FetchRepos(token)
+	}
+
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, map[string]string{"error": "Failed to fetch private repositories: " + err.Error()})
+		render.JSON(w, r, map[string]string{"error": "Failed to fetch repositories: " + err.Error()})
 		return nil, http.StatusInternalServerError, err
 	}
 

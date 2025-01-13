@@ -1,18 +1,22 @@
 package handlers
 
 import (
-	"errors"
+	"bytes"
+	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
 
+	internalerrors "github.com/MarlomSouza/go-git/internal-errors"
 	"github.com/MarlomSouza/go-git/internal/models"
 	internalmock "github.com/MarlomSouza/go-git/tests/internal-mock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
-func Test_GetPrivateRepos_Should_Return_PrivateRepo(t *testing.T) {
+func Test_FetchRepos_Success(t *testing.T) {
 	//Arrange
 	expectedRepos := []models.Repository{
 		{
@@ -22,17 +26,26 @@ func Test_GetPrivateRepos_Should_Return_PrivateRepo(t *testing.T) {
 			Private:      true,
 			Organization: "org1",
 		},
+		{
+			Name:         "repo2",
+			Description:  "description2",
+			LastUpdate:   time.Now(),
+			Private:      false,
+			Organization: "org1",
+		},
 	}
+	expectedToken := "test-token"
 	gitHubServiceMock := new(internalmock.GithubServiceMock)
 	h := RepoHandler{
 		GitHubService: gitHubServiceMock,
 	}
-	gitHubServiceMock.On("FetchPrivateRepos").Return(expectedRepos, nil)
-	req := httptest.NewRequest(http.MethodGet, "/repos/private", nil)
-	res := httptest.NewRecorder()
+
+	gitHubServiceMock.On("FetchRepos", mock.MatchedBy(func(request string) bool { return request == expectedToken })).Return(expectedRepos, nil)
+	req, res := newHttpTest(http.MethodGet, "/repos/", nil)
+	req = addContext(req, "accessToken", expectedToken)
 
 	// Act
-	obj, statusCode, _ := h.GetPrivateRepos(res, req)
+	obj, statusCode, _ := h.GetRepos(res, req)
 
 	// Assert
 	assert.Equal(t, http.StatusOK, statusCode)
@@ -40,14 +53,32 @@ func Test_GetPrivateRepos_Should_Return_PrivateRepo(t *testing.T) {
 
 }
 
-func Test_GetPrivateRepos_Should_Return_Error(t *testing.T) {
+func Test_FetchRepos_InternalServerError(t *testing.T) {
 	//Arrange
-	expectedError := errors.New("Error when fetching")
+	expectedToken := "test-token"
 	gitHubServiceMock := new(internalmock.GithubServiceMock)
 	h := RepoHandler{
 		GitHubService: gitHubServiceMock,
 	}
-	gitHubServiceMock.On("FetchPrivateRepos").Return(nil, expectedError)
+
+	gitHubServiceMock.On("FetchRepos", mock.MatchedBy(func(request string) bool { return request == expectedToken })).Return(nil, internalerrors.ErrInternal)
+	req, res := newHttpTest(http.MethodGet, "/repos/", nil)
+	req = addContext(req, "accessToken", expectedToken)
+
+	// Act
+	_, statusCode, error := h.GetRepos(res, req)
+
+	// Assert
+	assert.Equal(t, http.StatusInternalServerError, statusCode)
+	assert.Equal(t, internalerrors.ErrInternal.Error(), error.Error())
+}
+
+func Test_GetRepos_MissingAccessToken(t *testing.T) {
+	//Arrange
+	h := RepoHandler{
+		GitHubService: new(internalmock.GithubServiceMock),
+	}
+
 	req := httptest.NewRequest(http.MethodGet, "/repos/private", nil)
 	res := httptest.NewRecorder()
 
@@ -55,6 +86,22 @@ func Test_GetPrivateRepos_Should_Return_Error(t *testing.T) {
 	_, statusCode, err := h.GetPrivateRepos(res, req)
 
 	// Assert
-	assert.Equal(t, statusCode, res.Code)
-	assert.Equal(t, err.Error(), expectedError.Error())
+	assert.Equal(t, http.StatusUnauthorized, statusCode)
+	assert.Equal(t, internalerrors.ErrUnauthorized.Error(), err.Error())
+}
+
+func addContext(req *http.Request, keyParameter string, valueParameter string) *http.Request {
+	ctx := context.WithValue(req.Context(), keyParameter, valueParameter)
+	return req.WithContext(ctx)
+}
+
+func newHttpTest(method string, url string, body interface{}) (*http.Request, *httptest.ResponseRecorder) {
+
+	var buf bytes.Buffer
+	if body != nil {
+		json.NewEncoder(&buf).Encode(body)
+	}
+	req, _ := http.NewRequest(method, url, &buf)
+	rr := httptest.NewRecorder()
+	return req, rr
 }
