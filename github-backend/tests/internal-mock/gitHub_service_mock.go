@@ -17,7 +17,7 @@ func (m *GithubServiceMock) FetchPrivateRepos(token string) ([]models.Repository
 	return args.Get(0).([]models.Repository), args.Error(1)
 }
 
-func (m *GithubServiceMock) FetchPublicRepos(token string) ([]models.Repository, error) {
+func (m *GithubServiceMock) FetchRepos(token string) ([]models.Repository, error) {
 	args := m.Called(token)
 	if args.Error(1) != nil {
 		return nil, args.Error(1)

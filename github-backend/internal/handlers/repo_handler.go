@@ -34,7 +34,7 @@ func (h *RepoHandler) GetPublicRepos(w http.ResponseWriter, r *http.Request) (in
 		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
 	}
 
-	repos, err := h.GitHubService.FetchPublicRepos(token)
+	repos, err := h.GitHubService.FetchRepos(token)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, map[string]string{"error": "Failed to fetch public repositories: " + err.Error()})

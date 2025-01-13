@@ -9,7 +9,7 @@ import (
 )
 
 type GitHubService interface {
-	FetchPublicRepos(token string) ([]models.Repository, error)
+	FetchRepos(token string) ([]models.Repository, error)
 	FetchPrivateRepos(token string) ([]models.Repository, error)
 }
 
@@ -28,7 +28,7 @@ func NewGitHubService() *GitHubServiceImp {
 }
 
 // FetchPersonalRepos retrieves the authenticated user's personal repositories
-func (s *GitHubServiceImp) FetchPublicRepos(token string) ([]models.Repository, error) {
+func (s *GitHubServiceImp) FetchRepos(token string) ([]models.Repository, error) {
 	url := fmt.Sprintf("%s/user/repos?type=all", s.BaseURL)
 	return s.fetchRepos(url, token)
 }
