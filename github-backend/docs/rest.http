@@ -1,6 +1,6 @@
 ###
-GET http://localhost:5000/repos/private
-Authorization: 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
+GET http://localhost:5000/repos/public
+Authorization: Bearer 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
 
 
 ###

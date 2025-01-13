@@ -21,19 +21,20 @@ func NewRepoHandler(service services.GitHubService) *RepoHandler {
 
 // RegisterRoutes registers routes for the RepoHandler
 func (h *RepoHandler) RegisterRoutes(r chi.Router) {
-	r.Get("/repos/private", HandlerError(h.GetPrivateRepos))
-	r.Get("/repos/public", HandlerError(h.GetPublicRepos))
+	r.Route("/repos", func(r chi.Router) {
+		r.Use(TokenFromHeaderMiddleware)
+		r.Get("/private", HandlerError(h.GetPrivateRepos))
+		r.Get("/public", HandlerError(h.GetPublicRepos))
+	})
 }
 
 func (h *RepoHandler) GetPublicRepos(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
-	//get from header the token
-
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
+	token, ok := r.Context().Value("accessToken").(string)
+	if !ok || token == "" {
 		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
 	}
 
-	repos, err := h.GitHubService.FetchPublicRepos(authHeader)
+	repos, err := h.GitHubService.FetchPublicRepos(token)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, map[string]string{"error": "Failed to fetch public repositories: " + err.Error()})
@@ -46,13 +47,11 @@ func (h *RepoHandler) GetPublicRepos(w http.ResponseWriter, r *http.Request) (in
 // GetPrivateRepos fetches and returns private repositories
 func (h *RepoHandler) GetPrivateRepos(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
 
-	authHeader := r.Header.Get("Authorization")
-
-	if authHeader == "" {
-		return nil, http.StatusUnauthorized, nil
+	token, ok := r.Context().Value("accessToken").(string)
+	if !ok || token == "" {
+		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
 	}
-
-	repos, err := h.GitHubService.FetchPrivateRepos(authHeader)
+	repos, err := h.GitHubService.FetchPrivateRepos(token)
 	if err != nil {
 		render.Status(r, http.StatusInternalServerError)
 		render.JSON(w, r, map[string]string{"error": "Failed to fetch private repositories: " + err.Error()})
