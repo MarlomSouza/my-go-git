@@ -26,27 +26,16 @@ func (h *RepoHandler) RegisterRoutes(r chi.Router) {
 		r.Use(TokenFromCookieMiddleware)
 		r.Get("/", HandlerError(h.GetRepos))
 		r.Get("/private", HandlerError(h.GetPrivateRepos))
-		r.Get("/organization", HandlerError(h.GetOrganization))
 		r.Get("/user", HandlerError(h.GetUser))
 	})
-}
 
-func (h *RepoHandler) GetOrganization(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
-	token, ok := r.Context().Value("accessToken").(string)
+	r.Route("/organization", func(r chi.Router) {
+		r.Use(TokenFromCookieMiddleware)
+		r.Get("/", HandlerError(h.GetOrganization))
+		r.Get("/{org}/repos", HandlerError(h.GetOrganizationRepos))
+		r.Get("/{org}/members", HandlerError(h.GetOrganizationMembers))
+	})
 
-	if !ok || token == "" {
-		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
-	}
-
-	organizations, err := h.GitHubService.FetchOrganization(token)
-
-	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, map[string]string{"error": "Failed to fetch repositories: " + err.Error()})
-		return nil, http.StatusInternalServerError, err
-	}
-
-	return organizations, http.StatusOK, nil
 }
 
 func (h *RepoHandler) GetRepos(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
@@ -98,4 +87,56 @@ func (h *RepoHandler) GetUser(w http.ResponseWriter, r *http.Request) (interface
 	}
 
 	return user, http.StatusOK, nil
+}
+func (h *RepoHandler) GetOrganization(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
+	token, ok := r.Context().Value("accessToken").(string)
+
+	if !ok || token == "" {
+		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
+	}
+
+	organizations, err := h.GitHubService.FetchOrganization(token)
+
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, map[string]string{"error": "Failed to fetch repositories: " + err.Error()})
+		return nil, http.StatusInternalServerError, err
+	}
+
+	return organizations, http.StatusOK, nil
+}
+
+// GetOrganizationRepos fetches and returns repositories for a specific organization
+func (h *RepoHandler) GetOrganizationRepos(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
+	token, ok := r.Context().Value("accessToken").(string)
+	if !ok || token == "" {
+		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
+	}
+
+	org := chi.URLParam(r, "org")
+	repos, err := h.GitHubService.FetchOrganizationRepos(token, org)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, map[string]string{"error": "Failed to fetch organization repos: " + err.Error()})
+		return nil, http.StatusInternalServerError, err
+	}
+
+	return repos, http.StatusOK, nil
+}
+
+func (h *RepoHandler) GetOrganizationMembers(w http.ResponseWriter, r *http.Request) (interface{}, int, error) {
+	token, ok := r.Context().Value("accessToken").(string)
+	if !ok || token == "" {
+		return nil, http.StatusUnauthorized, internalerrors.ErrUnauthorized
+	}
+
+	org := chi.URLParam(r, "org")
+	members, err := h.GitHubService.FetchOrganizationMembers(token, org)
+	if err != nil {
+		render.Status(r, http.StatusInternalServerError)
+		render.JSON(w, r, map[string]string{"error": "Failed to fetch organization members: " + err.Error()})
+		return nil, http.StatusInternalServerError, err
+	}
+
+	return members, http.StatusOK, nil
 }

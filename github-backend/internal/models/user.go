@@ -16,4 +16,5 @@ type User struct {
 	TotalPrivateRepos       int    `json:"total_private_repos"`
 	OwnedPrivateRepos       int    `json:"owned_private_repos"`
 	TwoFactorAuthentication bool   `json:"two_factor_authentication"`
+	Organization            string `json:"organization"`
 }

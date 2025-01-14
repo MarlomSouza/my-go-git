@@ -25,12 +25,12 @@ func (m *GithubServiceMock) FetchRepos(token string) ([]models.Repository, error
 	return args.Get(0).([]models.Repository), args.Error(1)
 }
 
-func (m *GithubServiceMock) FetchOrganization(token string) ([]string, error) {
+func (m *GithubServiceMock) FetchOrganization(token string) ([]models.Organization, error) {
 	args := m.Called(token)
 	if args.Error(1) != nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).([]string), args.Error(1)
+	return args.Get(0).([]models.Organization), args.Error(1)
 }
 
 func (m *GithubServiceMock) FetchUser(token string) (models.User, error) {
@@ -39,4 +39,20 @@ func (m *GithubServiceMock) FetchUser(token string) (models.User, error) {
 		return models.User{}, args.Error(1)
 	}
 	return args.Get(0).(models.User), args.Error(1)
+}
+
+func (m *GithubServiceMock) FetchOrganizationRepos(token string, org string) ([]models.Repository, error) {
+	args := m.Called(token, org)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.Repository), args.Error(1)
+}
+
+func (m *GithubServiceMock) FetchOrganizationMembers(token string, org string) ([]models.OrganizationMember, error) {
+	args := m.Called(token, org)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]models.OrganizationMember), args.Error(1)
 }

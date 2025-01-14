@@ -20,18 +20,16 @@ func Test_FetchRepos_Success(t *testing.T) {
 	//Arrange
 	expectedRepos := []models.Repository{
 		{
-			Name:         "repo1",
-			Description:  "description1",
-			LastUpdate:   time.Now(),
-			Private:      true,
-			Organization: "org1",
+			Name:        "repo1",
+			Description: "description1",
+			LastUpdate:  time.Now(),
+			Private:     true,
 		},
 		{
-			Name:         "repo2",
-			Description:  "description2",
-			LastUpdate:   time.Now(),
-			Private:      false,
-			Organization: "org1",
+			Name:        "repo2",
+			Description: "description2",
+			LastUpdate:  time.Now(),
+			Private:     false,
 		},
 	}
 	expectedToken := "test-token"

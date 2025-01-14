@@ -11,8 +11,10 @@ import (
 type GitHubService interface {
 	FetchRepos(token string) ([]models.Repository, error)
 	FetchPrivateRepos(token string) ([]models.Repository, error)
-	FetchOrganization(token string) ([]string, error)
 	FetchUser(token string) (models.User, error)
+	FetchOrganization(token string) ([]models.Organization, error)
+	FetchOrganizationRepos(token string, org string) ([]models.Repository, error)
+	FetchOrganizationMembers(token string, org string) ([]models.OrganizationMember, error)
 }
 
 // GitHubService provides methods for interacting with the GitHub API
@@ -65,35 +67,6 @@ func (s *GitHubServiceImp) fetchRepos(url string, token string) ([]models.Reposi
 	return repos, nil
 }
 
-// fetchOrganizations fetches the list of organizations the authenticated user is a part of
-func (s *GitHubServiceImp) FetchOrganization(token string) ([]string, error) {
-	client := s.HTTPClient
-
-	var orgs []models.Orgs
-
-	resp, err := client.R().
-		SetHeader("Authorization", "Bearer "+token).
-		SetHeader("Accept", "application/vnd.github.v3+json").
-		SetResult(&orgs).
-		Get(fmt.Sprintf("%s/user/orgs", s.BaseURL))
-
-	if err != nil {
-		return nil, fmt.Errorf("request failed: %w", err)
-	}
-
-	if resp.IsError() {
-		return nil, fmt.Errorf("GitHub API error: %s", resp.String())
-	}
-
-	// Extract the organization logins from the response
-	var orgNames []string
-	for _, org := range orgs {
-		orgNames = append(orgNames, org.Login)
-	}
-
-	return orgNames, nil
-}
-
 // FetchUser retrieves the authenticated user's profile information
 func (s *GitHubServiceImp) FetchUser(token string) (models.User, error) {
 	client := s.HTTPClient
@@ -114,4 +87,53 @@ func (s *GitHubServiceImp) FetchUser(token string) (models.User, error) {
 	}
 
 	return user, nil
+}
+
+// fetchOrganizations fetches the list of organizations the authenticated user is a part of
+func (s *GitHubServiceImp) FetchOrganization(token string) ([]models.Organization, error) {
+	client := s.HTTPClient
+
+	var orgs []models.Organization
+
+	resp, err := client.R().
+		SetHeader("Authorization", "Bearer "+token).
+		SetHeader("Accept", "application/vnd.github.v3+json").
+		SetResult(&orgs).
+		Get(fmt.Sprintf("%s/user/orgs", s.BaseURL))
+
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %w", err)
+	}
+
+	if resp.IsError() {
+		return nil, fmt.Errorf("GitHub API error: %s", resp.String())
+	}
+
+	return orgs, nil
+}
+
+func (s *GitHubServiceImp) FetchOrganizationRepos(token string, org string) ([]models.Repository, error) {
+	url := fmt.Sprintf("%s/orgs/%s/repos", s.BaseURL, org)
+	return s.fetchRepos(url, token)
+}
+
+func (s *GitHubServiceImp) FetchOrganizationMembers(token string, org string) ([]models.OrganizationMember, error) {
+	client := s.HTTPClient
+
+	var members []models.OrganizationMember
+	resp, err := client.R().
+		SetHeader("Authorization", "Bearer "+token).
+		SetHeader("Accept", "application/vnd.github.v3+json").
+		SetResult(&members).
+		Get(fmt.Sprintf("%s/orgs/%s/members", s.BaseURL, org))
+
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %w", err)
+	}
+
+	if resp.IsError() {
+		return nil, fmt.Errorf("GitHub API error: %s", resp.String())
+	}
+
+	return members, nil
 }
