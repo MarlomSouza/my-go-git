@@ -54,9 +54,11 @@ func main() {
 	gitHubService := services.NewGitHubService()
 
 	repoHandler := handlers.NewRepoHandler(gitHubService)
-	repoHandler.RegisterRoutes(r)
-
+	organizationHandler := handlers.NewOrganizationHandler(gitHubService)
 	oAuthHandler := handlers.NewOAuthHandler(oauth2Config)
+
+	repoHandler.RegisterRoutes(r)
+	organizationHandler.RegisterRoutes(r)
 	oAuthHandler.RegisterRoutes(r)
 
 	r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {

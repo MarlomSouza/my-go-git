@@ -15,21 +15,8 @@ const Dashboard = () => {
   const { organization } = useAuth();
   const [repos, setRepos] = useState([]);
 
-  useEffect(() => {
-    fetchRepo();
-  }, [organization]);
-
   const fetchRepo = async () => {
     try {
-      // if (privateRepo) {
-
-      //   const response = await api.get('/repos/private');
-      //   setRepos(response.data);
-      // }
-      // else {
-      //   const response = await api.get('/repos/');
-      //   setRepos(response.data);
-      // }
       const response = await api.get('/repos/');
       setRepos(response.data);
     } catch (error) {
@@ -45,17 +32,6 @@ const Dashboard = () => {
       console.error('Error fetching repositories:', error);
     }
   }, [organization])
-
-  useEffect(() => {
-    if (organization?.login) {
-      fetchOrganizationsRepos()
-    }
-
-  }, [fetchOrganizationsRepos, organization])
-
-  useEffect(() => {
-    fetchRepo();
-  }, []);
 
   const fetchUser = async () => {
     try {
@@ -77,8 +53,19 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchUser();
+    fetchRepo();
     fetchOrganizations()
   }, []);
+
+  useEffect(() => {
+    if (organization?.login) {
+      fetchOrganizationsRepos()
+    }
+    else {
+      fetchRepo();
+    }
+
+  }, [fetchOrganizationsRepos, organization])
 
   if (error) {
     return <p className="text-red-500">Error: {error}</p>;

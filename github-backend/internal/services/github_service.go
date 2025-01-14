@@ -8,9 +8,12 @@ import (
 	"github.com/MarlomSouza/go-git/internal/models"
 )
 
+type HTTPClient interface {
+	R() *resty.Request
+}
+
 type GitHubService interface {
 	FetchRepos(token string) ([]models.Repository, error)
-	FetchPrivateRepos(token string) ([]models.Repository, error)
 	FetchUser(token string) (models.User, error)
 	FetchOrganization(token string) ([]models.Organization, error)
 	FetchOrganizationRepos(token string, org string) ([]models.Repository, error)
@@ -19,7 +22,7 @@ type GitHubService interface {
 
 // GitHubService provides methods for interacting with the GitHub API
 type GitHubServiceImp struct {
-	HTTPClient *resty.Client
+	HTTPClient HTTPClient
 	BaseURL    string
 }
 
@@ -34,12 +37,6 @@ func NewGitHubService() *GitHubServiceImp {
 // FetchPersonalRepos retrieves the authenticated user's personal repositories
 func (s *GitHubServiceImp) FetchRepos(token string) ([]models.Repository, error) {
 	url := fmt.Sprintf("%s/user/repos?type=all", s.BaseURL)
-	return s.fetchRepos(url, token)
-}
-
-// FetchPersonalRepos fetches personal repositories of the authenticated user
-func (s *GitHubServiceImp) FetchPrivateRepos(token string) ([]models.Repository, error) {
-	url := fmt.Sprintf("%s/user/repos?type=private", s.BaseURL)
 	return s.fetchRepos(url, token)
 }
 

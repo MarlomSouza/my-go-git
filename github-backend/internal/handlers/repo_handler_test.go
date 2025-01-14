@@ -81,7 +81,7 @@ func Test_GetRepos_MissingAccessToken(t *testing.T) {
 	res := httptest.NewRecorder()
 
 	// Act
-	_, statusCode, err := h.GetPrivateRepos(res, req)
+	_, statusCode, err := h.GetRepos(res, req)
 
 	// Assert
 	assert.Equal(t, http.StatusUnauthorized, statusCode)

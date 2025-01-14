@@ -8,11 +8,6 @@ import (
 	"github.com/go-chi/render"
 )
 
-type EndpointStruct struct {
-	Obj    interface{}
-	Status int
-}
-
 type EndpointFunc func(w http.ResponseWriter, r *http.Request) (interface{}, int, error)
 
 func HandlerError(endpointFunc EndpointFunc) http.HandlerFunc {
