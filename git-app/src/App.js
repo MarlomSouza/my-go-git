@@ -5,7 +5,7 @@ import GitHubLogin from './pages/Login/GitHubLogin';
 
 const MainContainer = ({ children }) => {
   return (
-    <main className="m-10 flex min-h-screen flex-1 flex-col">{children}</main>
+    <main className="m-2 flex min-h-screen  flex-col">{children}</main>
   );
 };
 

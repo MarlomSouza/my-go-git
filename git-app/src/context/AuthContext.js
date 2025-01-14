@@ -6,6 +6,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [organization,setOrganization] = useState(null);
 
     useEffect(() => {
         // Check if access_token cookie exists
@@ -31,7 +32,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, organization , setOrganization }}>
             {children}
         </AuthContext.Provider>
     );

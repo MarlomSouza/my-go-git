@@ -8,4 +8,5 @@ type Repository struct {
 	Description string    `json:"description"`
 	LastUpdate  time.Time `json:"updated_at"`
 	Private     bool      `json:"private"`
+	Stars       int       `json:"stargazers_count"`
 }
