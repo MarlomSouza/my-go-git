@@ -21,7 +21,7 @@ const RepositoryList = ({ repos }) => {
 
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
-    setCurrentPage(1); // Reset to first page on filter change
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page) => {
@@ -30,11 +30,11 @@ const RepositoryList = ({ repos }) => {
 
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1); // Reset to first page on items per page change
+    setCurrentPage(1);
   };
 
   return (
-    <div className="bg-white shadow rounded p-4 mt-4">
+    <div className="bg-white shadow rounded-lg p-4 mt-4">
       <h3 className="text-lg font-semibold mb-2">Repositories</h3>
       <FilterInput filter={filter} onFilterChange={handleFilterChange} />
       <ul>

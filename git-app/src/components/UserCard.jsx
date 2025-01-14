@@ -28,10 +28,10 @@ const UserCard = ({ user }) => (
       <p className="text-gray-800"><strong>Two-Factor Authentication:</strong> {user.two_factor_authentication ? 'Enabled' : 'Disabled'}</p>
     </div>
     <div className="flex justify-between">
-      <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full">
+      <span className="bg-green-200 text-green-700 px-3 py-1 rounded-full">
         Public Repos: {user.public_repos}
       </span>
-      <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full">
+      <span className="bg-red-200 text-red-700 px-3 py-1 rounded-full">
         Private Repos: {user.total_private_repos}
       </span>
     </div>

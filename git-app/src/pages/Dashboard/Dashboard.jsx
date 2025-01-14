@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-import OrganizationDetails from "../../components/organization/OrganizationDetails";
+import Loading from "../../components/Loading";
+import OrganizationList from "../../components/organization/OrganizationList";
 import OrganizationMemberList from "../../components/organization/OrganizationMemberList";
 import RepositoryList from "../../components/RepositoryList";
 import UserCard from "../../components/UserCard";
@@ -14,11 +15,9 @@ const Dashboard = () => {
   const { organization } = useAuth();
   const [repos, setRepos] = useState([]);
 
-
-  // const handleMyRepos = () => {
-  //   setOrganization({});
-  //   fetchRepo();
-  // }
+  useEffect(() => {
+    fetchRepo();
+  }, [organization]);
 
   const fetchRepo = async () => {
     try {
@@ -86,50 +85,36 @@ const Dashboard = () => {
   }
 
   if (!user) {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading />
+      </div>
+    );
   }
 
   return (
-    // <div className="flex flex-col items-center justify-center min-h-screen">
-    //   <button onClick={logout} className="text-sm text-red-500">Logout</button>
-    //   <div className="flex p-2  flex-row rounded-lg shadow-lg">
-    //     <div className="flex flex-col rounded-lg shadow-lg">
-    //       <UserCard user={user} />
-    //       <div className="flex space-x-4 mb-4">
-    //         <button className="px-4 py-2 rounded  bg-gray-200 text-gray-700" onClick={handleMyRepos}>
-    //           View my repos
-    //         </button>
 
-    //       </div>
-    //       {organizations.length > 0 && (<OrganizationList organizations={organizations} />)}
-    //     </div>
-    //     {!!organization && <OrganizationMemberList orgName={organization.login} />}
-    //     <RepoList repos={repos} />
-
-    //   </div>
-    // </div>
     <div className="bg-gray-100 min-h-screen p-4">
-      <div className="flex items-center justify-between  gap-2">
-        <div className={organizations ? "w-3/4" : "w-full"}>
+      <div className="flex items-center justify-between gap-2">
+        <div className={organizations.length ? "w-3/4" : "w-full"}>
           <UserCard user={user} />
         </div>
-        <div className="w-1/4  " >
-          {/*  list of organization */}
-          {organizations.map((org, index) => (
-            <OrganizationDetails key={`${index}-org-detail`} org={org} />
-          ))}
-        </div>
-      </div>
-      {organization ? (
-        <div className="flex items-center justify-between">
-          <div className={organizations ? "w-3/4" : "w-full"}>
-            <RepositoryList repos={repos} />
+        {organizations.length && (
+          <div className="w-1/4">
+            <OrganizationList organizations={organizations} />
           </div>
-          <div className="w-1/4  " >
+        )}
+      </div>
+      <div className="flex items-center justify-between gap-2 mt-4">
+        <div className={organization ? "w-3/4" : "w-full"}>
+          <RepositoryList repos={repos} />
+        </div>
+        {organization && (
+          <div className="w-1/4">
             <OrganizationMemberList orgName={organization.login} />
           </div>
-        </div>
-      ) : <RepositoryList repos={repos} />}
+        )}
+      </div>
     </div>
   );
 };
