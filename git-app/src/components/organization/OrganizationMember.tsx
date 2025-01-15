@@ -1,6 +1,6 @@
-import React from 'react';
+import { Member } from '../../models/types';
 
-const OrganizationMember = ({ member }) => {
+const OrganizationMember = ({ member } : {member: Member}) => {
   return (
     <div className="flex items-center bg-gray-50 p-4 rounded-lg shadow hover:bg-gray-100 my-4">
       <img

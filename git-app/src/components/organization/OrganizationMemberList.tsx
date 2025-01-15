@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
+import { Member } from '../../models/types';
 import api from '../../services/api';
 import Loading from '../Loading';
 import OrganizationMember from './OrganizationMember';
 
-const OrganizationMemberList = ({ orgName }) => {
-  const [members, setMembers] = useState([]);
+const OrganizationMemberList = ({ orgName }: {orgName: string}) => {
+  const [members, setMembers] = useState<Member[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

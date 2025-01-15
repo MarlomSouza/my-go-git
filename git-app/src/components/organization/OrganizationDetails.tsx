@@ -1,13 +1,12 @@
-import React from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { Organization } from '../../models/types';
 
-const OrganizationDetails = ({ org }) => {
+const OrganizationDetails = ({org}: {org: Organization}) => {
   const { organization, setOrganization } = useAuth();
-
   const isSelected = organization && organization.login === org.login;
 
   return (
-    <div className={`relative flex items-center p-4 border  ${isSelected ? 'border-green-500' : 'border-gray-300'} rounded-lg bg-gray-50 shadow h-auto`}>
+    <div className={`relative flex items-center p-4 border ${isSelected ? 'border-green-500' : 'border-gray-300'} rounded-lg bg-gray-50 shadow h-auto`}>
       {isSelected && (
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"

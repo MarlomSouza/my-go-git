@@ -1,7 +1,7 @@
-import React from 'react';
+import { Repository } from '../models/types';
 import StarCount from './StarCount';
 
-const RepositoryDetails = ({ repo }) => {
+const RepositoryDetails = ({ repo } : {repo: Repository}) => {
   return (
     <div className="border-b py-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
 

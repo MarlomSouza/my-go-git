@@ -1,6 +1,5 @@
-import React from 'react';
 
-const FilterInput = ({ filter, onFilterChange }) => {
+const FilterInput = ({ filter, onFilterChange } : { filter : any,onFilterChange: any }) => {
     return (
         <input
             type="text"

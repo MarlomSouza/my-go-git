@@ -1,6 +1,6 @@
-import React from 'react';
+import { User } from '../models/types';
 
-const UserCard = ({ user }) => (
+const UserCard = ({ user } : {user: User}) => (
   <div className="w-full bg-white shadow-lg rounded-lg p-6">
     <div className="flex items-center mb-4">
       <img

@@ -1,4 +1,4 @@
-const StarCount = ({ count }) => {
+const StarCount = ({ count } : {count: number}) => {
     return (
         <span className="text-yellow-500">
             <svg
