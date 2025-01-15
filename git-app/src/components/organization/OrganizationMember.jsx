@@ -2,7 +2,7 @@ import React from 'react';
 
 const OrganizationMember = ({ member }) => {
   return (
-    <li className="flex items-center bg-gray-50 p-4 rounded-lg shadow hover:bg-gray-100">
+    <div className="flex items-center bg-gray-50 p-4 rounded-lg shadow hover:bg-gray-100 my-4">
       <img
         src={member.avatar_url}
         alt={`${member.login}'s avatar`}
@@ -19,7 +19,7 @@ const OrganizationMember = ({ member }) => {
           View Profile
         </a>
       </div>
-    </li>
+    </div>
   );
 };
 

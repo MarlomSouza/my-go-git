@@ -34,21 +34,24 @@ const RepositoryList = ({ repos }) => {
   };
 
   return (
-    <div className="bg-white shadow rounded-lg p-4 mt-4">
+    <div className="bg-white shadow rounded-lg p-4 flex flex-col flex-1 justify-items-stretch gap-2">
       <h3 className="text-lg font-semibold mb-2">Repositories</h3>
       <FilterInput filter={filter} onFilterChange={handleFilterChange} />
-      <ul>
-        {paginatedRepos.map((repo) => (
-          <RepositoryDetails key={repo.id} repo={repo} />
+      <div className='flex-grow'>
+        {paginatedRepos.map((repo, index) => (
+          <RepositoryDetails key={`${index}-repo`} repo={repo} />
         ))}
-      </ul>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={handleItemsPerPageChange}
-      />
+      </div>
+
+      <div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          onItemsPerPageChange={handleItemsPerPageChange}
+        />
+      </div>
     </div>
   );
 };

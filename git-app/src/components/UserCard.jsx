@@ -1,7 +1,7 @@
 import React from 'react';
 
 const UserCard = ({ user }) => (
-  <div className="w-full bg-white shadow-lg rounded-lg p-6 mb-6">
+  <div className="w-full bg-white shadow-lg rounded-lg p-6">
     <div className="flex items-center mb-4">
       <img
         src={user.avatar_url}

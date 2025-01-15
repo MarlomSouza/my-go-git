@@ -7,7 +7,7 @@ const FilterInput = ({ filter, onFilterChange }) => {
             placeholder="Filter repositories"
             value={filter}
             onChange={onFilterChange}
-            className="mb-4 p-2 border rounded w-full"
+            className="p-2 border rounded-lg w-full"
         />
     );
 };

@@ -3,7 +3,7 @@ import StarCount from './StarCount';
 
 const RepositoryDetails = ({ repo }) => {
   return (
-    <li className="border-b py-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
+    <div className="border-b py-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
 
       <span className="font-medium text-lg flex-grow">{repo.name}</span>
 
@@ -39,7 +39,7 @@ const RepositoryDetails = ({ repo }) => {
           />
         </svg>
       </a>
-    </li>
+    </div>
 
   );
 };

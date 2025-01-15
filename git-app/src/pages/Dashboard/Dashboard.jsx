@@ -29,7 +29,7 @@ const Dashboard = () => {
       const response = await api.get(`/organization/${organization.login}/repos`);
       setRepos(response.data);
     } catch (error) {
-      console.error('Error fetching repositories:', error);
+      console.error('Error fetching organization repositories:', error);
     }
   }, [organization])
 
@@ -81,23 +81,23 @@ const Dashboard = () => {
 
   return (
 
-    <div className="bg-gray-100 min-h-screen p-4">
-      <div className="flex items-center justify-between gap-2">
-        <div className={organizations.length ? "w-3/4" : "w-full"}>
+    <div className=" min-h-screen p-4">
+      <div className="flex  items-stretch justify-between gap-2 flex-wrap">
+        <div className="flex flex-grow">
           <UserCard user={user} />
         </div>
-        {organizations.length && (
-          <div className="w-1/4">
+        {organizations.length > 0 && (
+          <div className="flex flex-1">
             <OrganizationList organizations={organizations} />
           </div>
         )}
       </div>
-      <div className="flex items-center justify-between gap-2 mt-4">
-        <div className={organization ? "w-3/4" : "w-full"}>
+      <div className="flex items-stretch justify-between gap-2 mt-2 flex-wrap">
+        <div className="flex flex-grow">
           <RepositoryList repos={repos} />
         </div>
         {organization && (
-          <div className="w-1/4">
+          <div className="flex flex-grow">
             <OrganizationMemberList orgName={organization.login} />
           </div>
         )}

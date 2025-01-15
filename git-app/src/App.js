@@ -5,12 +5,12 @@ import GitHubLogin from './pages/Login/GitHubLogin';
 
 const MainContainer = ({ children }) => {
   return (
-    <main className="m-2 flex min-h-screen  flex-col">{children}</main>
+    <main className="flex  flex-col">{children}</main>
   );
 };
 
 const Container = ({ children }) => {
-  return <div className="flex flex-col ">{children}</div>;
+  return <section className="flex flex-col  bg-gray-100">{children}</section>;
 };
 
 export const Layout = ({ children }) => {
