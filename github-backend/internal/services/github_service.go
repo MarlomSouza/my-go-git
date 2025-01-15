@@ -1,10 +1,13 @@
 package services
 
 import (
+	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/go-resty/resty/v2"
 
+	internalerrors "github.com/MarlomSouza/go-git/internal-errors"
 	"github.com/MarlomSouza/go-git/internal/models"
 )
 
@@ -53,12 +56,16 @@ func (s *GitHubServiceImp) fetchRepos(url string, token string) ([]models.Reposi
 		SetResult(&repos). // Automatically decode JSON into the repos variable
 		Get(url)
 
+	if resp.StatusCode() == http.StatusUnauthorized {
+		return nil, internalerrors.ErrUnauthorized
+	}
+
 	if err != nil {
-		return nil, fmt.Errorf("request failed: %w", err)
+		return nil, errors.New("request failed: " + err.Error())
 	}
 
 	if resp.IsError() {
-		return nil, fmt.Errorf("GitHub API error: %s", resp.String())
+		return nil, errors.New("GitHub API error: " + resp.String())
 	}
 
 	return repos, nil
@@ -75,12 +82,16 @@ func (s *GitHubServiceImp) FetchUser(token string) (models.User, error) {
 		SetResult(&user).
 		Get(fmt.Sprintf("%s/user", s.BaseURL))
 
+	if resp.StatusCode() == http.StatusUnauthorized {
+		return models.User{}, internalerrors.ErrUnauthorized
+	}
+
 	if err != nil {
-		return models.User{}, fmt.Errorf("request failed: %w", err)
+		return models.User{}, errors.New("request failed: " + err.Error())
 	}
 
 	if resp.IsError() {
-		return models.User{}, fmt.Errorf("GitHub API error: %s", resp.String())
+		return models.User{}, errors.New("GitHub API error: " + resp.String())
 	}
 
 	return user, nil
@@ -98,12 +109,16 @@ func (s *GitHubServiceImp) FetchOrganization(token string) ([]models.Organizatio
 		SetResult(&orgs).
 		Get(fmt.Sprintf("%s/user/orgs", s.BaseURL))
 
+	if resp.StatusCode() == http.StatusUnauthorized {
+		return nil, internalerrors.ErrUnauthorized
+	}
+
 	if err != nil {
-		return nil, fmt.Errorf("request failed: %w", err)
+		return nil, errors.New("request failed: " + err.Error())
 	}
 
 	if resp.IsError() {
-		return nil, fmt.Errorf("GitHub API error: %s", resp.String())
+		return nil, errors.New("GitHub API error: " + resp.String())
 	}
 
 	return orgs, nil
@@ -124,12 +139,16 @@ func (s *GitHubServiceImp) FetchOrganizationMembers(token string, org string) ([
 		SetResult(&members).
 		Get(fmt.Sprintf("%s/orgs/%s/members", s.BaseURL, org))
 
+	if resp.StatusCode() == http.StatusUnauthorized {
+		return nil, internalerrors.ErrUnauthorized
+	}
+
 	if err != nil {
-		return nil, fmt.Errorf("request failed: %w", err)
+		return nil, errors.New("request failed: " + err.Error())
 	}
 
 	if resp.IsError() {
-		return nil, fmt.Errorf("GitHub API error: %s", resp.String())
+		return nil, errors.New("GitHub API error: " + resp.String())
 	}
 
 	return members, nil
