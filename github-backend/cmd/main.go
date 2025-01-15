@@ -25,7 +25,7 @@ func main() {
 	oauth2Config := &oauth2.Config{
 		ClientID:     cfg.GitHubClientID,
 		ClientSecret: cfg.GitHubClientSecret,
-		RedirectURL:  cfg.RedirectURL,
+		RedirectURL:  cfg.GitHubRedirectURL,
 		Scopes:       []string{"repo", "user", "read:org"},
 		Endpoint:     github.Endpoint,
 	}
@@ -55,7 +55,7 @@ func main() {
 
 	repoHandler := handlers.NewRepoHandler(gitHubService)
 	organizationHandler := handlers.NewOrganizationHandler(gitHubService)
-	oAuthHandler := handlers.NewOAuthHandler(oauth2Config)
+	oAuthHandler := handlers.NewOAuthHandler(oauth2Config, cfg.FrontendRedirectURL)
 
 	repoHandler.RegisterRoutes(r)
 	organizationHandler.RegisterRoutes(r)

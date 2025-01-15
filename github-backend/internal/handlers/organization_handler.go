@@ -6,7 +6,6 @@ import (
 	internalerrors "github.com/MarlomSouza/go-git/internal-errors"
 	"github.com/MarlomSouza/go-git/internal/services"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
 )
 
 // RepoHandler handles repository-related endpoints
@@ -40,8 +39,6 @@ func (h *OrganizationHandler) GetOrganization(w http.ResponseWriter, r *http.Req
 	organizations, err := h.GitHubService.FetchOrganization(token)
 
 	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, map[string]string{"error": "Failed to fetch repositories: " + err.Error()})
 		return nil, http.StatusInternalServerError, err
 	}
 
@@ -58,8 +55,6 @@ func (h *OrganizationHandler) GetOrganizationRepos(w http.ResponseWriter, r *htt
 	org := chi.URLParam(r, "org")
 	repos, err := h.GitHubService.FetchOrganizationRepos(token, org)
 	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, map[string]string{"error": "Failed to fetch organization repos: " + err.Error()})
 		return nil, http.StatusInternalServerError, err
 	}
 
@@ -75,8 +70,6 @@ func (h *OrganizationHandler) GetOrganizationMembers(w http.ResponseWriter, r *h
 	org := chi.URLParam(r, "org")
 	members, err := h.GitHubService.FetchOrganizationMembers(token, org)
 	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, map[string]string{"error": "Failed to fetch organization members: " + err.Error()})
 		return nil, http.StatusInternalServerError, err
 	}
 

@@ -12,7 +12,8 @@ import (
 
 // OAuthHandler handles GitHub OAuth operations
 type OAuthHandler struct {
-	OAuthConfig *oauth2.Config
+	OAuthConfig         *oauth2.Config
+	FrontendRedirectURL string
 }
 
 func (h *OAuthHandler) RegisterRoutes(r chi.Router) {
@@ -23,8 +24,8 @@ func (h *OAuthHandler) RegisterRoutes(r chi.Router) {
 }
 
 // NewOAuthHandler creates a new instance of OAuthHandler
-func NewOAuthHandler(config *oauth2.Config) *OAuthHandler {
-	return &OAuthHandler{OAuthConfig: config}
+func NewOAuthHandler(config *oauth2.Config, frontendRedirectURL string) *OAuthHandler {
+	return &OAuthHandler{OAuthConfig: config, FrontendRedirectURL: frontendRedirectURL}
 }
 
 // Handle GitHub Login
@@ -55,9 +56,10 @@ func (h *OAuthHandler) GitHubCallback(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		HttpOnly: false,
 		Secure:   true,
+		Expires:  token.Expiry,
 	})
 
-	http.Redirect(w, r, "http://localhost:3000/", http.StatusFound)
+	http.Redirect(w, r, h.FrontendRedirectURL, http.StatusFound)
 
 }
 
@@ -73,5 +75,4 @@ func (h *OAuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	})
 
 	render.JSON(w, r, "Logged out successfully")
-
 }

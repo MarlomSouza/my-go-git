@@ -7,7 +7,6 @@ import (
 	"github.com/MarlomSouza/go-git/internal/models"
 	"github.com/MarlomSouza/go-git/internal/services"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
 )
 
 // RepoHandler handles repository-related endpoints
@@ -42,8 +41,6 @@ func (h *RepoHandler) GetRepos(w http.ResponseWriter, r *http.Request) (interfac
 	repos, err = h.GitHubService.FetchRepos(token)
 
 	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, map[string]string{"error": "Failed to fetch repositories: " + err.Error()})
 		return nil, http.StatusInternalServerError, err
 	}
 
@@ -59,8 +56,6 @@ func (h *RepoHandler) GetUser(w http.ResponseWriter, r *http.Request) (interface
 
 	user, err := h.GitHubService.FetchUser(token)
 	if err != nil {
-		render.Status(r, http.StatusInternalServerError)
-		render.JSON(w, r, map[string]string{"error": "Failed to fetch user info: " + err.Error()})
 		return nil, http.StatusInternalServerError, err
 	}
 

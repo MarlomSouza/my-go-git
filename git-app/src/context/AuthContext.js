@@ -4,38 +4,38 @@ import api from "../services/api";
 
 const AuthContext = createContext();
 
+const baseURL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 export const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [organization,setOrganization] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [organization, setOrganization] = useState(null);
 
-    useEffect(() => {
-        // Check if access_token cookie exists
-        
-        const token = document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("access_token="))
-            ?.split("=")[1];
+  useEffect(() => {
+    // Check if access_token cookie exists
 
-        
-        if (token) {
-            setIsAuthenticated(true); // User is authenticated
-        }
-    }, []);
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("access_token="))
+      ?.split("=")[1];
 
-    const login = () => {
-        window.location.href = process.env.REACT_APP_API_URL + "/login/github";
-    };
+    setIsAuthenticated(!!token); // User is authenticated
+  }, []);
 
-    const logout = async () => {
-         await api.post("/logout");
-        setIsAuthenticated(false);
-    };
+  const login = () => {
+    window.location.href = baseURL + "/login/github";
+  };
 
-    return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, organization , setOrganization }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  const logout = async () => {
+    await api.post("/logout");
+    setIsAuthenticated(false);
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{ isAuthenticated, login, logout, organization, setOrganization }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => React.useContext(AuthContext);
