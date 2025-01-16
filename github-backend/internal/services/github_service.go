@@ -45,27 +45,10 @@ func (s *GitHubServiceImp) FetchRepos(token string) ([]models.Repository, error)
 
 // fetchRepos handles the core logic for fetching repositories from the GitHub API
 func (s *GitHubServiceImp) fetchRepos(url string, token string) ([]models.Repository, error) {
-	// Use the injected HTTP client (resty.Client)
-	client := s.HTTPClient
-
-	// Store the response in a slice of repositories
 	var repos []models.Repository
-	resp, err := client.R().
-		SetHeader("Authorization", "Bearer "+token).
-		SetHeader("Accept", "application/vnd.github.v3+json").
-		SetResult(&repos). // Automatically decode JSON into the repos variable
-		Get(url)
-
-	if resp.StatusCode() == http.StatusUnauthorized {
-		return nil, internalerrors.ErrUnauthorized
-	}
-
+	err := s.makeRequest(url, token, &repos)
 	if err != nil {
-		return nil, errors.New("request failed: " + err.Error())
-	}
-
-	if resp.IsError() {
-		return nil, errors.New("GitHub API error: " + resp.String())
+		return make([]models.Repository, 0), err
 	}
 
 	return repos, nil
@@ -73,25 +56,10 @@ func (s *GitHubServiceImp) fetchRepos(url string, token string) ([]models.Reposi
 
 // FetchUser retrieves the authenticated user's profile information
 func (s *GitHubServiceImp) FetchUser(token string) (models.User, error) {
-	client := s.HTTPClient
-
 	var user models.User
-	resp, err := client.R().
-		SetHeader("Authorization", "Bearer "+token).
-		SetHeader("Accept", "application/vnd.github.v3+json").
-		SetResult(&user).
-		Get(fmt.Sprintf("%s/user", s.BaseURL))
-
-	if resp.StatusCode() == http.StatusUnauthorized {
-		return models.User{}, internalerrors.ErrUnauthorized
-	}
-
+	err := s.makeRequest(fmt.Sprintf("%s/user", s.BaseURL), token, &user)
 	if err != nil {
-		return models.User{}, errors.New("request failed: " + err.Error())
-	}
-
-	if resp.IsError() {
-		return models.User{}, errors.New("GitHub API error: " + resp.String())
+		return models.User{}, err
 	}
 
 	return user, nil
@@ -99,26 +67,10 @@ func (s *GitHubServiceImp) FetchUser(token string) (models.User, error) {
 
 // fetchOrganizations fetches the list of organizations the authenticated user is a part of
 func (s *GitHubServiceImp) FetchOrganization(token string) ([]models.Organization, error) {
-	client := s.HTTPClient
-
 	var orgs []models.Organization
-
-	resp, err := client.R().
-		SetHeader("Authorization", "Bearer "+token).
-		SetHeader("Accept", "application/vnd.github.v3+json").
-		SetResult(&orgs).
-		Get(fmt.Sprintf("%s/user/orgs", s.BaseURL))
-
-	if resp.StatusCode() == http.StatusUnauthorized {
-		return nil, internalerrors.ErrUnauthorized
-	}
-
+	err := s.makeRequest(fmt.Sprintf("%s/user/orgs", s.BaseURL), token, &orgs)
 	if err != nil {
-		return nil, errors.New("request failed: " + err.Error())
-	}
-
-	if resp.IsError() {
-		return nil, errors.New("GitHub API error: " + resp.String())
+		return nil, err
 	}
 
 	return orgs, nil
@@ -130,26 +82,34 @@ func (s *GitHubServiceImp) FetchOrganizationRepos(token string, org string) ([]m
 }
 
 func (s *GitHubServiceImp) FetchOrganizationMembers(token string, org string) ([]models.OrganizationMember, error) {
-	client := s.HTTPClient
-
 	var members []models.OrganizationMember
-	resp, err := client.R().
-		SetHeader("Authorization", "Bearer "+token).
-		SetHeader("Accept", "application/vnd.github.v3+json").
-		SetResult(&members).
-		Get(fmt.Sprintf("%s/orgs/%s/members", s.BaseURL, org))
-
-	if resp.StatusCode() == http.StatusUnauthorized {
-		return nil, internalerrors.ErrUnauthorized
-	}
+	err := s.makeRequest(fmt.Sprintf("%s/orgs/%s/members", s.BaseURL, org), token, &members)
 
 	if err != nil {
-		return nil, errors.New("request failed: " + err.Error())
-	}
-
-	if resp.IsError() {
-		return nil, errors.New("GitHub API error: " + resp.String())
+		return nil, err
 	}
 
 	return members, nil
+}
+
+func (s *GitHubServiceImp) makeRequest(url, token string, result interface{}) error {
+	resp, err := s.HTTPClient.R().
+		SetHeader("Authorization", "Bearer "+token).
+		SetHeader("Accept", "application/vnd.github.v3+json").
+		SetResult(result).
+		Get(url)
+
+	if resp.StatusCode() == http.StatusUnauthorized {
+		return internalerrors.ErrUnauthorized
+	}
+
+	if err != nil {
+		return errors.New("request failed: " + err.Error())
+	}
+
+	if resp.IsError() {
+		return errors.New("GitHub API error: " + resp.String())
+	}
+
+	return nil
 }
