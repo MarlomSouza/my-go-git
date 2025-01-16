@@ -14,12 +14,14 @@ type GitHubHTTPClientInterface interface {
 }
 
 type GitHubHTTPClient struct {
-	Client *resty.Client
+	Client  *resty.Client
+	BaseURL string
 }
 
 func NewGitHubHTTPClient() *GitHubHTTPClient {
 	return &GitHubHTTPClient{
-		Client: resty.New(),
+		Client:  resty.New(),
+		BaseURL: "https://api.github.com",
 	}
 }
 
@@ -28,7 +30,7 @@ func (c *GitHubHTTPClient) MakeRequest(url, token string, result interface{}) er
 		SetHeader("Authorization", "Bearer "+token).
 		SetHeader("Accept", "application/vnd.github.v3+json").
 		SetResult(result).
-		Get(url)
+		Get(c.BaseURL + url)
 
 	if resp.StatusCode() == http.StatusUnauthorized {
 		return internalerrors.ErrUnauthorized
