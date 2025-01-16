@@ -6,6 +6,7 @@ import (
 
 	"github.com/MarlomSouza/go-git/config"
 	"github.com/MarlomSouza/go-git/internal/handlers"
+	"github.com/MarlomSouza/go-git/internal/infra"
 	"github.com/MarlomSouza/go-git/internal/services"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -51,7 +52,8 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	gitHubService := services.NewGitHubService()
+	httpClient := infra.NewGitHubHTTPClient()
+	gitHubService := services.NewGitHubService(httpClient)
 
 	repoHandler := handlers.NewRepoHandler(gitHubService)
 	organizationHandler := handlers.NewOrganizationHandler(gitHubService)
