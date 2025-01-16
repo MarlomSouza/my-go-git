@@ -1,37 +1,52 @@
-import { User } from '../models/types';
+import { User } from "../models/types";
+import LogOut from "./Logout";
 
-const UserCard = ({ user } : {user: User}) => (
-  <div className="w-full bg-white shadow-lg rounded-lg p-6">
-    <div className="flex items-center mb-4">
+const UserCard = ({ user }: { user: User }) => (
+  <div className="relative w-full rounded-lg bg-white p-6 shadow-lg">
+    <LogOut />
+    <div className="mb-4 flex items-center">
       <img
         src={user.avatar_url}
         alt="Avatar"
-        className="w-20 h-20 rounded-full mr-4"
+        className="mr-4 h-20 w-20 rounded-full"
       />
       <div>
         <h2 className="text-xl font-bold">{user.name}</h2>
         <p className="text-gray-600">@{user.login}</p>
-        {user.email && <p className="text-gray-700 mt-1">{user.email}</p>}
+        {user.email && <p className="mt-1 text-gray-700">{user.email}</p>}
       </div>
     </div>
-    <div className="grid grid-cols-2 gap-4 mb-4">
+    <div className="mb-4 grid grid-cols-2 gap-4">
       <div>
-        <p className="text-gray-800"><strong>Followers:</strong> {user.followers}</p>
-        <p className="text-gray-800"><strong>Following:</strong> {user.following}</p>
+        <p className="text-gray-800">
+          <strong>Followers:</strong> {user.followers}
+        </p>
+        <p className="text-gray-800">
+          <strong>Following:</strong> {user.following}
+        </p>
       </div>
       <div>
-        <p className="text-gray-800"><strong>Account Created:</strong> {new Date(user.created_at).toLocaleDateString()}</p>
-        <p className="text-gray-800"><strong>Last Updated:</strong> {new Date(user.updated_at).toLocaleDateString()}</p>
+        <p className="text-gray-800">
+          <strong>Account Created:</strong>{" "}
+          {new Date(user.created_at).toLocaleDateString()}
+        </p>
+        <p className="text-gray-800">
+          <strong>Last Updated:</strong>{" "}
+          {new Date(user.updated_at).toLocaleDateString()}
+        </p>
       </div>
     </div>
     <div className="mb-4">
-      <p className="text-gray-800"><strong>Two-Factor Authentication:</strong> {user.two_factor_authentication ? 'Enabled' : 'Disabled'}</p>
+      <p className="text-gray-800">
+        <strong>Two-Factor Authentication:</strong>{" "}
+        {user.two_factor_authentication ? "Enabled" : "Disabled"}
+      </p>
     </div>
     <div className="flex justify-between">
-      <span className="bg-green-200 text-green-700 px-3 py-1 rounded-full">
+      <span className="rounded-full bg-green-200 px-3 py-1 text-green-700">
         Public Repos: {user.public_repos}
       </span>
-      <span className="bg-red-200 text-red-700 px-3 py-1 rounded-full">
+      <span className="rounded-full bg-red-200 px-3 py-1 text-red-700">
         Private Repos: {user.total_private_repos}
       </span>
     </div>
