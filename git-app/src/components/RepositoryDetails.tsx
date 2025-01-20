@@ -1,19 +1,17 @@
-import { Repository } from '../models/types';
-import StarCount from './StarCount';
+import { Repository } from "../models/types";
+import StarCount from "./StarCount";
 
-const RepositoryDetails = ({ repo } : {repo: Repository}) => {
+const RepositoryDetails = ({ repo }: { repo: Repository }) => {
   return (
-    <div className="border-b py-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
+    <div className="flex items-center justify-between border-b py-4 transition-colors hover:bg-gray-50">
+      <span className="flex-grow text-lg font-medium">{repo.name}</span>
 
-      <span className="font-medium text-lg flex-grow">{repo.name}</span>
-
-      <div className="flex items-center space-x-1 ml-auto">
+      <div className="ml-auto flex items-center space-x-1">
         <StarCount count={repo.stargazers_count} />
       </div>
 
-
       <span
-        className={`px-3 py-1 text-xs font-semibold rounded-full ml-3 ${repo.private ? "bg-red-200 text-red-700" : "bg-green-200 text-green-700"}`}
+        className={`ml-3 rounded-full px-3 py-1 text-xs font-semibold ${repo.private ? "bg-red-200 text-red-700" : "bg-green-200 text-green-700"}`}
       >
         {repo.private ? "Private" : "Public"}
       </span>
@@ -25,7 +23,7 @@ const RepositoryDetails = ({ repo } : {repo: Repository}) => {
       >
         Go to Repo
         <svg
-          className="ml-1 w-4 h-4"
+          className="ml-1 h-4 w-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -40,7 +38,6 @@ const RepositoryDetails = ({ repo } : {repo: Repository}) => {
         </svg>
       </a>
     </div>
-
   );
 };
 

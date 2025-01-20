@@ -1,5 +1,5 @@
-import { User } from "../models/types";
 import LogOut from "./Logout";
+import { User } from "../models/types";
 
 const UserCard = ({ user }: { user: User }) => (
   <div className="relative w-full rounded-lg bg-white p-6 shadow-lg">

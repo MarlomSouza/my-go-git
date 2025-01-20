@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import { Member } from '../../models/types';
-import api from '../../services/api';
-import Loading from '../Loading';
-import OrganizationMember from './OrganizationMember';
+import Loading from "../Loading";
+import { Member } from "../../models/types";
+import OrganizationMember from "./OrganizationMember";
+import api from "../../services/api";
 
-const OrganizationMemberList = ({ orgName }: {orgName: string}) => {
+const OrganizationMemberList = ({ orgName }: { orgName: string }) => {
   const [members, setMembers] = useState<Member[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -15,7 +15,7 @@ const OrganizationMemberList = ({ orgName }: {orgName: string}) => {
         const response = await api.get(`/organization/${orgName}/members`);
         setMembers(response.data);
       } catch (err) {
-        console.error('Error fetching organization members:', err);
+        console.error("Error fetching organization members:", err);
       } finally {
         setIsLoading(false);
       }
@@ -25,22 +25,18 @@ const OrganizationMemberList = ({ orgName }: {orgName: string}) => {
     }
   }, [orgName]);
 
-
-
   return (
-    <div className="w-full  bg-white shadow-lg rounded-lg p-4">
-      <h1 className="text-2xl font-bold mb-4">{orgName} members</h1>
-      {isLoading ? <Loading /> :
-        (
-          members.map((member) => (
-            <>
-              <OrganizationMember key={member.id} member={member} />
-            </>
-
-          ))
-        )
-      }
-
+    <div className="w-full rounded-lg bg-white p-4 shadow-lg">
+      <h1 className="mb-4 text-2xl font-bold">{orgName} members</h1>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        members.map((member) => (
+          <>
+            <OrganizationMember key={member.id} member={member} />
+          </>
+        ))
+      )}
     </div>
   );
 };

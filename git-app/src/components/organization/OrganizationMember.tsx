@@ -1,15 +1,15 @@
-import { Member } from '../../models/types';
+import { Member } from "../../models/types";
 
-const OrganizationMember = ({ member } : {member: Member}) => {
+const OrganizationMember = ({ member }: { member: Member }) => {
   return (
-    <div className="flex items-center bg-gray-50 p-4 rounded-lg shadow hover:bg-gray-100 my-4">
+    <div className="my-4 flex items-center rounded-lg bg-gray-50 p-4 shadow hover:bg-gray-100">
       <img
         src={member.avatar_url}
         alt={`${member.login}'s avatar`}
-        className="w-12 h-12 rounded-full border border-gray-200 mr-4"
+        className="mr-4 h-12 w-12 rounded-full border border-gray-200"
       />
       <div className="flex-1">
-        <p className="text-gray-800 font-semibold">{member.login}</p>
+        <p className="font-semibold text-gray-800">{member.login}</p>
         <a
           href={member.html_url}
           target="_blank"

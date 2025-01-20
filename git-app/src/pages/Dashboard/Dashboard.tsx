@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useState } from "react";
 import { Organization, Repository, User } from "../../models/types";
+import { useCallback, useEffect, useState } from "react";
 
 import Loading from "../../components/Loading";
 import OrganizationList from "../../components/organization/OrganizationList";
 import OrganizationMemberList from "../../components/organization/OrganizationMemberList";
 import RepositoryList from "../../components/RepositoryList";
 import UserCard from "../../components/UserCard";
-import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [error,setError ] = useState<any | null>(null);
+  const [error, setError] = useState<any | null>(null);
   const { organization } = useAuth();
   const [repos, setRepos] = useState<Repository[]>([]);
 
@@ -40,7 +40,7 @@ const Dashboard = () => {
     try {
       const response = await api.get("/repos/user");
       setUser(response.data);
-    } catch (error : any) {	
+    } catch (error: any) {
       setError(error.message);
     }
   };

@@ -1,22 +1,22 @@
 export interface User {
-    login: string;
-    id: number;
-    avatar_url: string;
-    name: string;
-    email?: string;
-    public_repos: number;
-    public_gists: number;
-    followers: number;
-    following: number;
-    created_at: string;
-    updated_at: string;
-    private_gists: number;
-    total_private_repos: number;
-    owned_private_repos: number;
-    two_factor_authentication: boolean;
-    organization: string;
-  }
-  
+  login: string;
+  id: number;
+  avatar_url: string;
+  name: string;
+  email?: string;
+  public_repos: number;
+  public_gists: number;
+  followers: number;
+  following: number;
+  created_at: string;
+  updated_at: string;
+  private_gists: number;
+  total_private_repos: number;
+  owned_private_repos: number;
+  two_factor_authentication: boolean;
+  organization: string;
+}
+
 export interface Organization {
   id: number;
   login: string;

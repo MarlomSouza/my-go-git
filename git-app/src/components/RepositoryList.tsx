@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Repository } from "../models/types";
 import FilterInput from "./FilterInput";
 import Pagination from "./Pagination";
+import { Repository } from "../models/types";
 import RepositoryDetails from "./RepositoryDetails";
+import { useState } from "react";
 
 const RepositoryList = ({ repos }: { repos: Repository[] }) => {
   const [filter, setFilter] = useState("");
@@ -19,12 +19,12 @@ const RepositoryList = ({ repos }: { repos: Repository[] }) => {
     currentPage * itemsPerPage,
   );
 
-  const handleFilterChange = (e: any ) => {
+  const handleFilterChange = (e: any) => {
     setFilter(e.target.value);
     setCurrentPage(1);
   };
 
-  const handlePageChange = (page : number) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 

@@ -1,7 +1,7 @@
+import Dashboard from "./pages/Dashboard/Dashboard";
+import GitHubLogin from "./pages/Login/GitHubLogin";
 import { ReactNode } from "react";
 import { useAuth } from "./context/AuthContext";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import GitHubLogin from './pages/Login/GitHubLogin';
 
 interface ContainerProps {
   children: ReactNode;
